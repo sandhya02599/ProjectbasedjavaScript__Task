@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filter</title>
+  <style>
+    *,
+    ::after,
+    ::before {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary-100: hsl(21, 94%, 87%);
+      --primary-200: hsl(21, 80%, 74%);
+      --primary-300: hsl(21, 65%, 59%);
+      --primary-400: hsl(21, 57%, 50%);
+      --primary-500: hsl(21, 62%, 45%);
+      --primary-600: hsl(21, 77%, 34%);
+      --primary-700: hsl(21, 81%, 29%);
+      --primary-800: hsl(21, 84%, 25%);
+      --primary-900: hsl(21, 91%, 17%);
+      --grey-50: #f8fafc;
+      --grey-100: #f1f5f9;
+      --grey-200: #e2e8f0;
+      --grey-300: #cbd5e1;
+      --grey-400: #94a3b8;
+      --grey-500: #64748b;
+      --grey-600: #475569;
+      --grey-700: #334155;
+      --grey-800: #1e293b;
+      --grey-900: #0f172a;
+      --black: #222;
+      --white: #fff;
+      --smallText: 0.7em;
+      --backgroundColor: var(--grey-50);
+      --textColor: var(--grey-900);
+      --borderRadius: 0.25rem;
+      --letterSpacing: 1px;
+      --transition: 0.3s ease-in-out all;
+      --max-width: 1120px;
+      --fluid-width: 90vw;
+      --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      background: var(--backgroundColor);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-weight: 400;
+      line-height: 1.75;
+      color: var(--textColor);
+    }
+
+    .products {
+      width: var(--fluid-width);
+      display: grid;
+      grid-gap: 1rem;
+      margin: 4rem auto;
+      max-width: var(--max-width);
+    }
+
+    .filters-container h5 {
+      font-weight: 500;
+      margin: 1.5rem 0 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .search-input {
+      padding: 0.5rem;
+      background: var(--grey-200);
+      border-radius: var(--borderRadius);
+      border-color: transparent;
+      letter-spacing: var(--letterSpacing);
+    }
+
+    .company-btn {
+      display: block;
+      margin: 0.25em 0;
+      padding: 0.25rem;
+      text-transform: capitalize;
+      background: transparent;
+      border-color: transparent;
+      letter-spacing: var(--letterSpacing);
+      color: var(--grey-500);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.85rem;
+    }
+    .company-btn:hover {
+      color: var(--grey-700);
+    }
+
+    .product {
+      margin-bottom: 1rem;
+    }
+    .product-img {
+      border-radius: var(--borderRadius);
+      height: 15rem;
+    }
+    .product footer {
+      padding: 0.75rem 0;
+      text-align: center;
+    }
+    .product-name {
+      margin-bottom: 0.25rem;
+      text-transform: capitalize;
+      letter-spacing: var(--letterSpacing);
+      color: var(--grey-500);
+    }
+    .product-price {
+      margin-bottom: 0;
+      color: var(--grey-700);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: var(--letterSpacing);
+    }
+
+    @media screen and (min-width: 768px) {
+      .products {
+        grid-template-columns: 200px 1fr;
+      }
+    }
+    @media screen and (min-width: 992px) {
+      .products-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .products-container .product-img {
+        height: 10rem;
+      }
+      .products-container .product-name,
+      .products-container .product-price {
+        font-size: 0.85rem;
+      }
+    }
+    @media screen and (min-width: 1170px) {
+      .products-container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <section class="products">
+    <div class="filters-container">
+      <input type="text" class="search-input" id="search" placeholder="Search products...">
+      <h5>Companies</h5>
+      <button class="company-btn" data-company="all">All</button>
+      <button class="company-btn" data-company="apple">Apple</button>
+      <button class="company-btn" data-company="samsung">Samsung</button>
+      <button class="company-btn" data-company="dell">Dell</button>
+    </div>
+
+    <div class="products-container" id="products">
+    
+    </div>
+  </section>
+
+  <script>
+    const productsData = [
+      { name: "iPhone 13", company: "apple", price: 799, img: "image/iphone.webp" },
+      { name: "Samsung Galaxy S21", company: "samsung", price: 699, img: "image/gray-gallery-2.avif" },
+      { name: "Dell XPS 13", company: "dell", price: 999, img: "image/71iufehfoxl.jpg" },
+      { name: "iPad Pro", company: "apple", price: 999, img: "image/img_2287-162127075533.jpeg" },
+      { name: "Samsung Galaxy Tab", company: "samsung", price: 499, img: "image/samsung.jpeg" },
+    ];
+
+    const productsContainer = document.getElementById("products");
+    const searchInput = document.getElementById("search");
+    const companyButtons = document.querySelectorAll(".company-btn");
+
+   
+    const displayProducts = (products) => {
+      if (products.length < 1) {
+        productsContainer.innerHTML = `<p>No products match your search.</p>`;
+        return;
+      }
+
+      productsContainer.innerHTML = products.map(product => `
+        <div class="product">
+          <img src="${product.img}" alt="${product.name}" class="product-img">
+          <footer>
+            <h5 class="product-name">${product.name}</h5>
+            <span class="product-price">$${product.price}</span>
+          </footer>
+        </div>
+      `).join("");
+    };
+
+   
+    displayProducts(productsData);
+
+ 
+    searchInput.addEventListener("keyup", (e) => {
+      const value = e.target.value.toLowerCase();
+      const filteredProducts = productsData.filter(product =>
+        product.name.toLowerCase().includes(value)
+      );
+      displayProducts(filteredProducts);
+    });
+
+    
+    companyButtons.forEach(button => {
+      button.addEventListener("click", (e) => {
+        const company = e.currentTarget.dataset.company;
+        const filteredProducts = company === "all" ? productsData : productsData.filter(product => product.company === company);
+        displayProducts(filteredProducts);
+      });
+    });
+  </script>
+</body>
+</html>
